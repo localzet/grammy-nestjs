@@ -9,4 +9,5 @@ export interface GrammyModuleOptions<C extends Context = Context> {
   // eslint-disable-next-line @typescript-eslint/ban-types
   include?: Function[];
   middlewares?: ReadonlyArray<Middleware<C>>;
+  disableUpdates?: boolean
 }

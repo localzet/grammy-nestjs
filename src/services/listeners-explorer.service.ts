@@ -49,7 +49,7 @@ export class ListenersExplorerService
 
     this.explore();
 
-    if (!this.grammyOptions.useWebhook) {
+    if (!this.grammyOptions.useWebhook && !this.grammyOptions.disableUpdates) {
       logger.debug('pollingOptions: ', this.grammyOptions.pollingOptions);
       await this.bot.start(this.grammyOptions.pollingOptions || {});
     }
