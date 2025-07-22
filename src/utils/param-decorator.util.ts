@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import { assignMetadata, PipeTransform, Type } from '@nestjs/common';
 import { isNil, isString } from '@nestjs/common/utils/shared.utils';
-import { GrammyParamtype } from '../enums/grammy-paramtype.enum';
+import { GrammyParamtype } from '../enums';
 import { PARAM_ARGS_METADATA } from '../nestjs-grammy.constants';
 
 export type ParamData = object | string | number;

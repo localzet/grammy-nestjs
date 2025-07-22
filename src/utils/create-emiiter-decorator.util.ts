@@ -5,7 +5,7 @@ import {
   StringOrRegexQuery,
   BotQuery,
   CommandQuery,
-} from '../types/grammy-types';
+} from '../types';
 import { LISTENERS_METADATA } from '../nestjs-grammy.constants';
 import { ListenerMetadata } from '../interfaces';
 

@@ -1,6 +1,6 @@
 import { PipeTransform, Type } from '@nestjs/common';
-import { createGrammyPipesParamDecorator } from '../../utils/param-decorator.util';
-import { GrammyParamtype } from '../../enums/grammy-paramtype.enum';
+import { createGrammyPipesParamDecorator } from '../../utils';
+import { GrammyParamtype } from '../../enums';
 
 export function Sender(): ParameterDecorator;
 export function Sender(

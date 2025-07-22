@@ -1,5 +1,5 @@
-import { createGrammyParamDecorator } from '../../utils/param-decorator.util';
-import { GrammyParamtype } from '../../enums/grammy-paramtype.enum';
+import { createGrammyParamDecorator } from '../../utils';
+import { GrammyParamtype } from '../../enums';
 
 export const Next: () => ParameterDecorator = createGrammyParamDecorator(
   GrammyParamtype.NEXT,

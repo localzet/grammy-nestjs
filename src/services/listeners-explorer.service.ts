@@ -12,7 +12,7 @@ import {
   GRAMMY_BOT_NAME,
 } from '../nestjs-grammy.constants';
 import { BaseExplorerService } from './base-explorer.service';
-import { GrammyParamsFactory } from '../factories/grammy-params-factory';
+import { GrammyParamsFactory } from '../factories';
 import { GrammyModuleOptions } from '../interfaces';
 import { GRAMMY_MODULE_OPTIONS } from '../nestjs-grammy.module-definition';
 import { Controller } from '@nestjs/common/interfaces';

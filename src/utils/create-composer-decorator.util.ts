@@ -3,7 +3,7 @@ import {
   ComposerMetadataChatType,
   ComposerMetadataPredicate,
 } from '../interfaces';
-import { COMPOSER_METADATA } from '../nestjs-grammy.constants';
+import { COMPOSER_METADATA } from '@localzet/grammy-nestjs';
 
 export function createComposerDecorator(
   method: ComposerMetadataChatType['method'],
