@@ -2,7 +2,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "target": "es2021",
-    "outDir": "./build",
+    "outDir": "build",
+    "rootDir": "src",
     "types": [
       "node"
     ],

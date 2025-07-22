@@ -1,7 +1,7 @@
 {
   "name": "@localzet/grammy-nestjs",
   "type": "commonjs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "public": true,
   "license": "AGPL-3.0-only",
   "description": "Telegram lib for NestJS",
@@ -9,7 +9,7 @@
   "homepage": "https://github.com/localzet/grammy-nestjs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/localzet/grammy-nestjs"
+    "url": "git+https://github.com/localzet/grammy-nestjs.git"
   },
   "bugs": {
     "url": "https://github.com/localzet/grammy-nestjs/issues"
@@ -41,6 +41,7 @@
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.20",
     "@types/node": "^24.0.15",
-    "grammy": "^1.7.3"
+    "grammy": "^1.7.3",
+    "typescript": "^5.8.3"
   }
 }
