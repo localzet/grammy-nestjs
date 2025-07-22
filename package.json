@@ -31,17 +31,19 @@
   },
   "keywords": [],
   "dependencies": {
+    "lodash": "^4.17.21",
     "tslib": "^2.3.0"
   },
   "peerDependencies": {
-    "@nestjs/common": "^10.0.0",
-    "@nestjs/core": "^10.0.0",
+    "@nestjs/common": "^10.0.0 || ^11.0.0",
+    "@nestjs/core": "^10.0.0 || ^11.0.0",
     "grammy": "^1.7.3"
   },
   "devDependencies": {
-    "@nestjs/common": "^10.0.0",
-    "@nestjs/core": "^10.0.0",
+    "@nestjs/common": "^10.0.0 || ^11.0.0",
+    "@nestjs/core": "^10.0.0 || ^11.0.0",
     "@types/jest": "^30.0.0",
+    "@types/lodash": "^4.17.20",
     "@types/node": "^24.0.15",
     "grammy": "^1.7.3"
   }
