@@ -15,15 +15,15 @@ export async function createBotFactory<C extends Context = Context>(
 
     if (!bot.isInited()) {
         await bot.init();
-        logger.debug(`To optimize (for example):`);
+        logger.debug("To optimize (for example):");
         logger.debug(`export BOT_INFO='${JSON.stringify(bot.botInfo)}'`);
-        logger.debug(`(and in forRoot():)`);
-        logger.debug(`options: {botInfo: JSON.parse(process.env.BOT_INFO)},`);
+        logger.debug("(and in forRoot():)");
+        logger.debug("options: {botInfo: JSON.parse(process.env.BOT_INFO)},");
     } else {
-        logger.debug(`bot.isInited() is true`);
+        logger.debug("bot.isInited() is true");
     }
 
-    logger.debug(`createBotFactory creating bot: `, moduleOptions.botName);
+    logger.debug("createBotFactory creating bot: ", moduleOptions.botName);
 
     return bot;
 }
