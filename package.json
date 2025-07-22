@@ -1,0 +1,46 @@
+{
+  "name": "@localzet/grammy-nestjs",
+  "type": "commonjs",
+  "version": "1.0.0",
+  "public": true,
+  "license": "AGPL-3.0-only",
+  "description": "Telegram lib for NestJS",
+  "author": "Ivan Zorin <creator@localzet.com>",
+  "homepage": "https://github.com/localzet/grammy-nestjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/localzet/grammy-nestjs"
+  },
+  "bugs": {
+    "url": "https://github.com/localzet/grammy-nestjs/issues"
+  },
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "files": [
+    "build/**/*"
+  ],
+  "scripts": {
+    "clean": "rm -rf build",
+    "build:lib": "tsc -p tsconfig.lib.json",
+    "build": "npm run clean && npm run build:lib",
+    "prepublish": "npm run build",
+    "lint": "eslint \"src/**/*.ts\"",
+    "test": "jest",
+    "test:ci": "jest --ci --coverage",
+    "prepublishOnly": "npm run lint && npm run test"
+  },
+  "keywords": [],
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/core": "^10.0.0",
+    "grammy": "^1.7.3"
+  },
+  "devDependencies": {
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/core": "^10.0.0",
+    "grammy": "^1.7.3"
+  }
+}

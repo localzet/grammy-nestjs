@@ -1,0 +1,117 @@
+name: Deploy lib
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  send-start-message:
+    name: 📢 Send Telegram message
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔧 Checkout source code
+        uses: actions/checkout@v4
+
+      - name: 📬 Send Telegram message
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            🏹 Начало деплоя пакета ${{ github.REPOSITORY }}
+            Коммит: ${{ github.event.head_commit.message }}
+            Автор: ${{ github.event.head_commit.author.name }}
+            Время: ${{ github.event.head_commit.timestamp }}
+
+  build-for-npm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    steps:
+      - name: 🔧 Checkout source code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node for NPM registry
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies and build
+        run: npm ci && npm run prepublish
+
+      - name: 📤 Publish package on NPM
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  build-for-gh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    steps:
+      - name: 🔧 Checkout source code
+        uses: actions/checkout@v4
+
+      - name: 🔐 Configure .npmrc for GitHub Packages
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
+          echo "registry=https://npm.pkg.github.com"  >> ~/.npmrc
+          echo "always-auth=true" >> ~/.npmrc
+
+      - name: 🔧 Setup Node for GitHub Packages
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@${{ github.repository_owner }}'
+
+      - name: Install dependencies and build
+        run: npm ci && npm run prepublish
+
+      - name: 📦 Publish package to GitHub Packages
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  send-success-message:
+    name: 📢 Send Telegram message
+    needs: [ build-for-npm, build-for-gh ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔧 Checkout source code
+        uses: actions/checkout@v4
+
+      - name: 📬 Send Telegram message
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            ✅ Пакет ${{ github.REPOSITORY }} успешно опубликован
+            Коммит: ${{ github.event.head_commit.message }}
+            Автор: ${{ github.event.head_commit.author.name }}
+            Время: ${{ github.event.head_commit.timestamp }}
+
+  send-error-message:
+    name: 📢 Send Telegram message
+    runs-on: ubuntu-latest
+    needs: [ build-for-npm ]
+    if: failure()
+    steps:
+      - name: 🔧 Checkout source code
+        uses: actions/checkout@v4
+
+      - name: 📬 Send error notification
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            ❌ Ошибка в ${{ github.REPOSITORY }}: проблемы в сборке
