@@ -21,7 +21,7 @@ export type BotQuery =
     | 'inlineQuery'
     | 'callbackQuery';
 
-// @ts-ignore
+// @ts-expect-error
 export type ComposerMethodArgs<
     T extends Composer<never>,
     U extends FilterQuery | StringOrRegexQuery | CommandQuery,
