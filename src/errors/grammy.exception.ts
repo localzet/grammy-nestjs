@@ -1,2 +1,1 @@
-export class GrammyException extends Error {
-}
+export class GrammyException extends Error {}
