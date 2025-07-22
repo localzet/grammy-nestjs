@@ -13,13 +13,21 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "esnext",
-    "lib": ["es2022", "dom"],
+    "lib": [
+      "es2022",
+      "dom"
+    ],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@localzet/grammy-nestjs": ["src/index.ts"]
+      "@localzet/grammy-nestjs": [
+        "src/index.ts"
+      ]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": [
+    "node_modules",
+    "tmp"
+  ]
 }

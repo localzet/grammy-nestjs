@@ -1,5 +1,5 @@
-import { SetMetadata } from '@nestjs/common';
-import { UPDATE_METADATA } from '../../nestjs-grammy.constants';
+import {SetMetadata} from '@nestjs/common';
+import {UPDATE_METADATA} from '../../nestjs-grammy.constants';
 
 /**
  * `@Update` decorator, it's like NestJS `@Controller` decorator,

@@ -1,29 +1,25 @@
-import {
-  ComposerMetadata,
-  ComposerMetadataChatType,
-  ComposerMetadataPredicate,
-} from '../interfaces';
-import { COMPOSER_METADATA } from '@localzet/grammy-nestjs';
+import {ComposerMetadata, ComposerMetadataChatType, ComposerMetadataPredicate,} from '../interfaces';
+import {COMPOSER_METADATA} from '@localzet/grammy-nestjs';
 
 export function createComposerDecorator(
-  method: ComposerMetadataChatType['method'],
+    method: ComposerMetadataChatType['method'],
 ): (arg: ComposerMetadataChatType['arg']) => MethodDecorator;
 export function createComposerDecorator(
-  method: ComposerMetadataPredicate['method'],
+    method: ComposerMetadataPredicate['method'],
 ): (arg: ComposerMetadataPredicate['arg']) => MethodDecorator;
 
 export function createComposerDecorator(method: ComposerMetadata['method']) {
-  return (arg: ComposerMetadata['arg']): MethodDecorator => {
-    return (_target, _propertyKey, descriptor) => {
-      const metadata = {
-        method,
-        arg,
-      } as ComposerMetadata;
+    return (arg: ComposerMetadata['arg']): MethodDecorator => {
+        return (_target, _propertyKey, descriptor) => {
+            const metadata = {
+                method,
+                arg,
+            } as ComposerMetadata;
 
-      const previousValue: ComposerMetadata[] =
-        Reflect.getMetadata(COMPOSER_METADATA, descriptor.value!) || [];
-      const value = [...previousValue, metadata];
-      Reflect.defineMetadata(COMPOSER_METADATA, value, descriptor.value!);
+            const previousValue: ComposerMetadata[] =
+                Reflect.getMetadata(COMPOSER_METADATA, descriptor.value!) || [];
+            const value = [...previousValue, metadata];
+            Reflect.defineMetadata(COMPOSER_METADATA, value, descriptor.value!);
+        };
     };
-  };
 }

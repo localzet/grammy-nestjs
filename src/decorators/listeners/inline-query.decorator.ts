@@ -1,4 +1,4 @@
-import { createBotDecorator } from '../../utils';
+import {createBotDecorator} from '../../utils';
 
 /**
  * Registers middleware for handling inline_query actions with regular expressions.

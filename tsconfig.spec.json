@@ -3,7 +3,10 @@
   "compilerOptions": {
     "outDir": "./build",
     "module": "commonjs",
-    "types": ["jest", "node"]
+    "types": [
+      "jest",
+      "node"
+    ]
   },
   "include": [
     "jest.config.ts",

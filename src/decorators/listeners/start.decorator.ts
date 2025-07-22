@@ -1,4 +1,4 @@
-import { createBotDecorator } from '../../utils';
+import {createBotDecorator} from '../../utils';
 
 /**
  * Handler for /start command.

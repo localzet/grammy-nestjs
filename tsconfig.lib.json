@@ -3,7 +3,9 @@
   "compilerOptions": {
     "target": "es2021",
     "outDir": "./build",
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
     "strictNullChecks": true,
     "noImplicitAny": true,
     "strictBindCallApply": true,
@@ -12,7 +14,9 @@
     "declaration": true,
     "declarationMap": true
   },
-  "include": ["src/**/*.ts"],
+  "include": [
+    "src/**/*.ts"
+  ],
   "exclude": [
     "jest.config.ts",
     "scripts/**/*",

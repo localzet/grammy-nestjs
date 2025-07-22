@@ -1,4 +1,4 @@
-import { ROUTE_ARGS_METADATA } from '@nestjs/common/constants';
+import {ROUTE_ARGS_METADATA} from '@nestjs/common/constants';
 
 export const GRAMMY_BOT_NAME = Symbol('GRAMMY_BOT_NAME');
 export const DEFAULT_BOT_NAME = 'DEFAULT_BOT_NAME';
