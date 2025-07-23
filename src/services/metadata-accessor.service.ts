@@ -12,7 +12,7 @@ export class MetadataAccessorService {
     isUpdate(target: Function): boolean {
         if (!target) return false;
 
-        return !!this.reflector.get(UPDATE_METADATA, target);
+        return Boolean(this.reflector.get(UPDATE_METADATA, target));
     }
 
     getListenerMetadata(target: Function): ListenerMetadata[] | undefined {
