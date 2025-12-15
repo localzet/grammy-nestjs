@@ -1,117 +1,112 @@
-name: Deploy lib
+name: Build & Publish JS Library
 
 on:
-  workflow_dispatch:
-  push:
-    tags:
-      - '*'
+  release:
+    types: [created]
 
 jobs:
-  send-start-message:
-    name: 📢 Send Telegram message
+  build:
     runs-on: ubuntu-latest
-    steps:
-      - name: 🔧 Checkout source code
-        uses: actions/checkout@v4
 
-      - name: 📬 Send Telegram message
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: |
-            🏹 Начало деплоя пакета ${{ github.REPOSITORY }}
-            Коммит: ${{ github.event.head_commit.message }}
-            Автор: ${{ github.event.head_commit.author.name }}
-            Время: ${{ github.event.head_commit.timestamp }}
+    outputs:
+      version: ${{ steps.version.outputs.version }}
 
-  build-for-npm:
-    runs-on: ubuntu-latest
-    permissions:
+    permissions: 
       contents: read
       packages: write
       id-token: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: npm
+            registry: https://registry.npmjs.org
+            token_env: NPM_TOKEN
+            scope: ""
+          - name: github
+            registry: https://npm.pkg.github.com
+            token_env: GITHUB_TOKEN
+            scope: "@${{ github.repository_owner }}"
+
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     steps:
-      - name: 🔧 Checkout source code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: 🔧 Setup Node for NPM registry
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22.x'
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: Install dependencies and build
-        run: npm ci && npm run prepublish
-
-      - name: 📤 Publish package on NPM
-        run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  build-for-gh:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
-    steps:
-      - name: 🔧 Checkout source code
-        uses: actions/checkout@v4
-
-      - name: 🔐 Configure .npmrc for GitHub Packages
+      - name: Extract version from tag
+        id: version
         run: |
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
-          echo "registry=https://npm.pkg.github.com"  >> ~/.npmrc
-          echo "always-auth=true" >> ~/.npmrc
-
-      - name: 🔧 Setup Node for GitHub Packages
+          VERSION=${GITHUB_REF#refs/tags/}
+          VERSION=${VERSION#v}
+          # Remove -dev suffix if present for npm
+          NPM_VERSION=${VERSION%-dev}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "npm_version=$NPM_VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION, NPM Version: $NPM_VERSION"
+          
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.x'
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@${{ github.repository_owner }}'
+          node-version: 20
+          registry-url: ${{ matrix.registry }}
+          scope: ${{ matrix.scope }}
+          cache: npm
 
-      - name: Install dependencies and build
-        run: npm ci && npm run prepublish
+      - name: Sync package.json version
+        run: |
+          node -e "const fs = require('fs'); const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8')); pkg.version = '${{ steps.version.outputs.npm_version }}'; fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');"
+          cat package.json | grep '"version"'
 
-      - name: 📦 Publish package to GitHub Packages
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish to ${{ matrix.name }}
+        if: env[matrix.token_env] != ''
         run: npm publish --provenance --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ env[matrix.token_env] }}
 
-  send-success-message:
-    name: 📢 Send Telegram message
-    needs: [ build-for-npm, build-for-gh ]
+  notify:
+    if: always()
+    needs: [build]
     runs-on: ubuntu-latest
+
+    env:
+      TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+      TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+
     steps:
-      - name: 🔧 Checkout source code
-        uses: actions/checkout@v4
+      - name: Telegram notification
+        if: env.TG_BOT_TOKEN != '' && env.TG_CHAT_ID != ''
+        run: |
+          STATUS="✅ Success"
+          if [[ "${{ needs.build.result }}" != "success" ]]; then
+            STATUS="❌ Failed"
+          fi
+  
 
-      - name: 📬 Send Telegram message
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: |
-            ✅ Пакет ${{ github.REPOSITORY }} успешно опубликован
-            Коммит: ${{ github.event.head_commit.message }}
-            Автор: ${{ github.event.head_commit.author.name }}
-            Время: ${{ github.event.head_commit.timestamp }}
-
-  send-error-message:
-    name: 📢 Send Telegram message
-    runs-on: ubuntu-latest
-    needs: [ build-for-npm ]
-    if: failure()
-    steps:
-      - name: 🔧 Checkout source code
-        uses: actions/checkout@v4
-
-      - name: 📬 Send error notification
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: |
-            ❌ Ошибка в ${{ github.REPOSITORY }}: проблемы в сборке
+          MESSAGE=$(cat <<EOF
+          *CI/CD result*
+          Repo: \`${{ github.repository }}\`
+          Version: \`${{ needs.build.outputs.version || 'unknown' }}\`
+          Status: *$STATUS*
+  
+          Build: \`${{ needs.build.result }}\`
+          Publish: \`${{ needs.publish.result }}\`
+  
+          Ref: \`${{ github.ref_name }}\`
+          Commit: \`${{ github.sha }}\`
+          EOF
+          )
+  
+          curl -s -X POST https://api.telegram.org/bot$TG_BOT_TOKEN/sendMessage \
+            -d chat_id=$TG_CHAT_ID \
+            -d parse_mode=Markdown \
+            --data-urlencode "text=$MESSAGE"
