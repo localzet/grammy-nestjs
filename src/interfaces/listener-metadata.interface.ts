@@ -1,7 +1,7 @@
-import {FilterQuery} from 'grammy';
+import { FilterQuery } from "grammy";
 
 export interface ListenerMetadata {
-    emitter: string;
-    method: FilterQuery | string | RegExp | string[] | RegExp[];
-    args: unknown[];
+  emitter: string;
+  method: FilterQuery | string | RegExp | string[] | RegExp[];
+  args: unknown[];
 }
